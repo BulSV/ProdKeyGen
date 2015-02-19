@@ -12,11 +12,12 @@ Dialog::Dialog(QWidget *parent) :
   , bSetStartDate(new QPushButton(QString::fromUtf8("Set Start Date"), this))
   , bSetEndDate(new QPushButton(QString::fromUtf8("Set End Date"), this))
   , gbInfo(new QGroupBox(QString::fromUtf8("Information"), this))
-  , lStartDate(new QLabel(this))
-  , lEndDate(new QLabel(this))
+  , lStartDate(new QLabel(QDate::currentDate().toString(), this))
+  , lEndDate(new QLabel(QDate::currentDate().toString(), this))
   , lLicenseFileName(new QLabel(QString::fromUtf8("License File Name:"), this))
   , leLicenseFileName(new QLineEdit(this))
   , bGenerateLicenseFile(new QPushButton(QString::fromUtf8("Generate License File"), this))
+  , sbarInfo(new QStatusBar(this))
   , licenseFileGen(new LicenseFileGen(cwDate->selectedDate(), cwDate->selectedDate()))
 {
     QGridLayout *mainLayout = new QGridLayout;
@@ -38,6 +39,7 @@ Dialog::Dialog(QWidget *parent) :
     mainLayout->addWidget(lLicenseFileName, 4, 1, 1, 2);
     mainLayout->addWidget(leLicenseFileName, 5, 1, 1, 2);
     mainLayout->addWidget(bGenerateLicenseFile, 6, 1, 1, 2);
+    mainLayout->addWidget(sbarInfo, 7, 0, 1, 3);
     mainLayout->setSpacing(5);
 
     // делает окно фиксированного размера
@@ -49,6 +51,7 @@ Dialog::Dialog(QWidget *parent) :
 
     connect(licenseFileGen, SIGNAL(openFileError(QString)), this, SLOT(openFileError(QString)));
     connect(licenseFileGen, SIGNAL(writeFileError(QString)), this, SLOT(writeFileError(QString)));
+    connect(licenseFileGen, SIGNAL(licenseFileGenerated(QString)), this, SLOT(licenseFileGenerated(QString)));
 
     QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
     connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
@@ -62,12 +65,16 @@ void Dialog::setStartDate()
 {
     licenseFileGen->setStartDate(cwDate->selectedDate());
     lStartDate->setText(cwDate->selectedDate().toString());
+    sbarInfo->showMessage(QString::fromUtf8("Start Date set to ") + cwDate->selectedDate().toString());
+    cwDate->repaint();
 }
 
 void Dialog::setEndDate()
 {
     licenseFileGen->setEndDate(cwDate->selectedDate());
     lEndDate->setText(cwDate->selectedDate().toString());
+    sbarInfo->showMessage(QString::fromUtf8("End Date set to ") + cwDate->selectedDate().toString());
+    cwDate->repaint();
 }
 
 void Dialog::generateLicenseFile()
@@ -93,4 +100,9 @@ void Dialog::writeFileError(const QString &fileName)
     QMessageBox::critical(this,
                           QString::fromUtf8("Write File Error"),
                           QString::fromUtf8("Could not write into file: ") + fileName);
+}
+
+void Dialog::licenseFileGenerated(const QString &fileName)
+{
+    sbarInfo->showMessage(QString::fromUtf8("File ") + fileName + QString::fromUtf8(" is generated!"));
 }

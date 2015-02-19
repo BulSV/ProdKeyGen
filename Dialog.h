@@ -11,6 +11,7 @@
 #include <QLineEdit>
 #include <QCalendarWidget>
 #include <QGroupBox>
+#include <QStatusBar>
 #include "LicenseFileGen.h"
 
 class Dialog : public QDialog
@@ -29,6 +30,7 @@ private:
     QLabel *lLicenseFileName;
     QLineEdit *leLicenseFileName;
     QPushButton *bGenerateLicenseFile;
+    QStatusBar *sbarInfo;
 
     LicenseFileGen *licenseFileGen;
 private slots:
@@ -37,6 +39,7 @@ private slots:
     void generateLicenseFile();
     void openFileError(const QString &fileName);
     void writeFileError(const QString &fileName);
+    void licenseFileGenerated(const QString &fileName);
 };
 
 #endif // DIALOG_H
