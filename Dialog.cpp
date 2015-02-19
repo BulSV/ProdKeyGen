@@ -2,7 +2,9 @@
 #include <QApplication>
 #include <QGridLayout>
 #include <QFile>
+#include <QDataStream>
 #include <QShortcut>
+#include <QMessageBox>
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent)
@@ -40,8 +42,9 @@ Dialog::Dialog(QWidget *parent) :
     // делает окно фиксированного размера
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
-    connect(bSetStartDate, SIGNAL(clicked()), this, SLOT(openPort()));
-    connect(bSetEndDate, SIGNAL(clicked()), this, SLOT(closePort()));
+    connect(bSetStartDate, SIGNAL(clicked()), this, SLOT(setStartDate()));
+    connect(bSetEndDate, SIGNAL(clicked()), this, SLOT(setEndDate()));
+    connect(bGenerateLicenseFile, SIGNAL(clicked()), this, SLOT(generateLicenseFile()));
 
     QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
     connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
@@ -49,4 +52,42 @@ Dialog::Dialog(QWidget *parent) :
 
 Dialog::~Dialog()
 {
+}
+
+void Dialog::setStartDate()
+{
+}
+
+void Dialog::setEndDate()
+{
+}
+
+void Dialog::generateLicenseFile()
+{
+    QFile licenseFile;
+    QDataStream stream(&licenseFile);
+    stream.setVersion(QDataStream::Qt_5_2);
+
+    if(leLicenseFileName->text().isEmpty()) {
+        licenseFile.setFileName("LicenseFile.dat");
+    } else {
+        licenseFile.setFileName(leLicenseFileName->text());
+    }
+
+    if(licenseFile.open(QFile::WriteOnly)) {
+//        stream << *m_CurrentDate;
+
+        if(stream.status() != QDataStream::Ok)
+        {
+            QMessageBox::critical(this,
+                                  QString::fromUtf8("Write File Error"),
+                                  QString::fromUtf8("Could not write into file: ") + licenseFile.fileName());
+        }
+
+        licenseFile.close();
+    } else {
+        QMessageBox::critical(this,
+                              QString::fromUtf8("Open File Error"),
+                              QString::fromUtf8("Could not create file: ") + licenseFile.fileName());
+    }
 }

@@ -15,21 +15,23 @@
 class Dialog : public QDialog
 {
     Q_OBJECT
-
+public:
+    explicit Dialog(QWidget *parent = 0);
+    ~Dialog();
+private:
     QCalendarWidget *cwDate;
     QPushButton *bSetStartDate;
     QPushButton *bSetEndDate;
-    QLabel *lStartDate;
     QGroupBox *gbInfo;
+    QLabel *lStartDate;
     QLabel *lEndDate;
     QLabel *lLicenseFileName;
     QLineEdit *leLicenseFileName;
     QPushButton *bGenerateLicenseFile;
 private slots:
-
-public:
-    explicit Dialog(QWidget *parent = 0);
-    ~Dialog();
+    void setStartDate();
+    void setEndDate();
+    void generateLicenseFile();
 };
 
 #endif // DIALOG_H
