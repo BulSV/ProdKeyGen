@@ -13,11 +13,13 @@ else {
 }
 
 HEADERS += \
-    Dialog.h
+    Dialog.h \
+    LicenseFileGen.h
 
 SOURCES += \
     Dialog.cpp \
-    main.cpp
+    main.cpp \
+    LicenseFileGen.cpp
 
 #RESOURCES += \
 #    ProdKeyGen.qrc

@@ -17,6 +17,7 @@ Dialog::Dialog(QWidget *parent) :
   , lLicenseFileName(new QLabel(QString::fromUtf8("License File Name:"), this))
   , leLicenseFileName(new QLineEdit(this))
   , bGenerateLicenseFile(new QPushButton(QString::fromUtf8("Generate License File"), this))
+  , licenseFileGen(new LicenseFileGen(cwDate->selectedDate(), cwDate->selectedDate()))
 {
     QGridLayout *mainLayout = new QGridLayout;
     setLayout(mainLayout);
@@ -46,6 +47,9 @@ Dialog::Dialog(QWidget *parent) :
     connect(bSetEndDate, SIGNAL(clicked()), this, SLOT(setEndDate()));
     connect(bGenerateLicenseFile, SIGNAL(clicked()), this, SLOT(generateLicenseFile()));
 
+    connect(licenseFileGen, SIGNAL(openFileError(QString)), this, SLOT(openFileError(QString)));
+    connect(licenseFileGen, SIGNAL(writeFileError(QString)), this, SLOT(writeFileError(QString)));
+
     QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
     connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
 }
@@ -56,38 +60,37 @@ Dialog::~Dialog()
 
 void Dialog::setStartDate()
 {
+    licenseFileGen->setStartDate(cwDate->selectedDate());
+    lStartDate->setText(cwDate->selectedDate().toString());
 }
 
 void Dialog::setEndDate()
 {
+    licenseFileGen->setEndDate(cwDate->selectedDate());
+    lEndDate->setText(cwDate->selectedDate().toString());
 }
 
 void Dialog::generateLicenseFile()
 {
-    QFile licenseFile;
-    QDataStream stream(&licenseFile);
-    stream.setVersion(QDataStream::Qt_5_2);
-
     if(leLicenseFileName->text().isEmpty()) {
-        licenseFile.setFileName("LicenseFile.dat");
+        licenseFileGen->setLicenseFileName("LicenseFile.dat");
     } else {
-        licenseFile.setFileName(leLicenseFileName->text());
+        licenseFileGen->setLicenseFileName(leLicenseFileName->text());
     }
 
-    if(licenseFile.open(QFile::WriteOnly)) {
-//        stream << *m_CurrentDate;
+    licenseFileGen->generate();
+}
 
-        if(stream.status() != QDataStream::Ok)
-        {
-            QMessageBox::critical(this,
-                                  QString::fromUtf8("Write File Error"),
-                                  QString::fromUtf8("Could not write into file: ") + licenseFile.fileName());
-        }
+void Dialog::openFileError(const QString &fileName)
+{
+    QMessageBox::critical(this,
+                          QString::fromUtf8("Open File Error"),
+                          QString::fromUtf8("Could not create file: ") + fileName);
+}
 
-        licenseFile.close();
-    } else {
-        QMessageBox::critical(this,
-                              QString::fromUtf8("Open File Error"),
-                              QString::fromUtf8("Could not create file: ") + licenseFile.fileName());
-    }
+void Dialog::writeFileError(const QString &fileName)
+{
+    QMessageBox::critical(this,
+                          QString::fromUtf8("Write File Error"),
+                          QString::fromUtf8("Could not write into file: ") + fileName);
 }

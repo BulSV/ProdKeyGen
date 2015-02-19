@@ -11,6 +11,7 @@
 #include <QLineEdit>
 #include <QCalendarWidget>
 #include <QGroupBox>
+#include "LicenseFileGen.h"
 
 class Dialog : public QDialog
 {
@@ -28,10 +29,14 @@ private:
     QLabel *lLicenseFileName;
     QLineEdit *leLicenseFileName;
     QPushButton *bGenerateLicenseFile;
+
+    LicenseFileGen *licenseFileGen;
 private slots:
     void setStartDate();
     void setEndDate();
     void generateLicenseFile();
+    void openFileError(const QString &fileName);
+    void writeFileError(const QString &fileName);
 };
 
 #endif // DIALOG_H
