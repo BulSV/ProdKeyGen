@@ -66,7 +66,7 @@ void Dialog::setStartDate()
     licenseFileGen->setStartDate(cwDate->selectedDate());
     lStartDate->setText(cwDate->selectedDate().toString());
     sbarInfo->showMessage(QString::fromUtf8("Start Date set to ") + cwDate->selectedDate().toString());
-    cwDate->repaint();
+    cwDate->adjustSize(); // This fix redrawing of QCalendarWidget
 }
 
 void Dialog::setEndDate()
@@ -74,7 +74,7 @@ void Dialog::setEndDate()
     licenseFileGen->setEndDate(cwDate->selectedDate());
     lEndDate->setText(cwDate->selectedDate().toString());
     sbarInfo->showMessage(QString::fromUtf8("End Date set to ") + cwDate->selectedDate().toString());
-    cwDate->repaint();
+    cwDate->adjustSize(); // This fix redrawing of QCalendarWidget
 }
 
 void Dialog::generateLicenseFile()
